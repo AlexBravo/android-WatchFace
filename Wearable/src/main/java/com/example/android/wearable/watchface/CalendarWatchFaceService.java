@@ -58,14 +58,15 @@ public class CalendarWatchFaceService extends CanvasWatchFaceService {
 
         static final int BACKGROUND_COLOR = Color.BLACK;
         static final int FOREGROUND_COLOR = Color.WHITE;
-        static final int TEXT_SIZE = 25;
+        static final int TEXT_SIZE = 40; //25;
         static final int MSG_LOAD_MEETINGS = 0;
 
         /** Editable string containing the text to draw with the number of meetings in bold. */
         final Editable mEditable = new SpannableStringBuilder();
 
         /** Width specified when {@link #mLayout} was created. */
-        int mLayoutWidth;
+        private int mLayoutWidth;
+        private int mHeight;
 
         /** Layout to wrap {@link #mEditable} onto multiple lines. */
         DynamicLayout mLayout;
@@ -132,8 +133,10 @@ public class CalendarWatchFaceService extends CanvasWatchFaceService {
         @Override
         public void onDraw(Canvas canvas, Rect bounds) {
             // Create or update mLayout if necessary.
-            if (mLayout == null || mLayoutWidth != bounds.width()) {
+            //if (mLayout == null || mLayoutWidth != bounds.width()) {
+            if (mLayout == null) {
                 mLayoutWidth = bounds.width();
+                mHeight = bounds.height();
                 mLayout = new DynamicLayout(mEditable, mTextPaint, mLayoutWidth,
                         Layout.Alignment.ALIGN_NORMAL, 1 /* spacingMult */, 0 /* spacingAdd */,
                         false /* includePad */);
@@ -141,11 +144,14 @@ public class CalendarWatchFaceService extends CanvasWatchFaceService {
 
             // Update the contents of mEditable.
             mEditable.clear();
-            mEditable.append(Html.fromHtml(getResources().getQuantityString(
-                    R.plurals.calendar_meetings, mNumMeetings, mNumMeetings)));
+            //mEditable.append(Html.fromHtml(getResources().getQuantityString(
+            //        R.plurals.calendar_meetings, mNumMeetings, mNumMeetings)));
+            mEditable.append("Now my phone can stay in the pocket instead of being on my arm when I type.");
 
             // Draw the text on a solid background.
             canvas.drawColor(BACKGROUND_COLOR);
+
+            canvas.rotate(-90, mLayoutWidth/2, mHeight);
             mLayout.draw(canvas);
         }
 
