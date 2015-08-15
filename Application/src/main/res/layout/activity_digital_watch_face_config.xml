@@ -33,7 +33,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
-        <Spinner
+        <EditText
             android:id="@+id/background"
             android:entries="@array/color_array"
             android:layout_width="0dp"

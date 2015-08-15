@@ -74,6 +74,7 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
      * Update rate in milliseconds for mute mode. We update every minute, like in ambient mode.
      */
     private static final long MUTE_UPDATE_RATE_MS = TimeUnit.MINUTES.toMillis(1);
+    private String mText = "";
 
     @Override
     public Engine onCreateEngine() {
@@ -443,6 +444,8 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
 
             // In ambient and mute modes, draw AM/PM. Otherwise, draw a second blinking
             // colon followed by the seconds.
+            canvas.drawText(mText, x, mYOffset, mAmPmPaint);
+            /*
             if (isInAmbientMode() || mMute) {
                 x += mColonWidth;
                 canvas.drawText(getAmPmString(mTime.hour), x, mYOffset, mAmPmPaint);
@@ -454,6 +457,7 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
                 canvas.drawText(formatTwoDigitNumber(mTime.second), x, mYOffset,
                         mSecondPaint);
             }
+            */
         }
 
         /**
@@ -543,13 +547,19 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
                 if (!config.containsKey(configKey)) {
                     continue;
                 }
-                int color = config.getInt(configKey);
-                if (Log.isLoggable(TAG, Log.DEBUG)) {
-                    Log.d(TAG, "Found watch face config key: " + configKey + " -> "
-                            + Integer.toHexString(color));
-                }
-                if (updateUiForKey(configKey, color)) {
-                    uiUpdated = true;
+
+                if (configKey.equals(DigitalWatchFaceUtil.KEY_BACKGROUND_COLOR)) {
+                    mText = config.getString(configKey);
+
+                } else {
+                    int color = config.getInt(configKey);
+                    if (Log.isLoggable(TAG, Log.DEBUG)) {
+                        Log.d(TAG, "Found watch face config key: " + configKey + " -> "
+                                + Integer.toHexString(color));
+                    }
+                    if (updateUiForKey(configKey, color)) {
+                        uiUpdated = true;
+                    }
                 }
             }
             if (uiUpdated) {

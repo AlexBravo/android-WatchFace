@@ -24,9 +24,12 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.wearable.companion.WatchFaceCompanion;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -155,13 +158,14 @@ public class DigitalWatchFaceCompanionConfigActivity extends Activity
      *         default items are selected.
      */
     private void setUpAllPickers(DataMap config) {
-        setUpColorPickerSelection(R.id.background, KEY_BACKGROUND_COLOR, config,
-                R.string.color_black);
+        //setUpColorPickerSelection(R.id.background, KEY_BACKGROUND_COLOR, config,
+        //        R.string.color_black);
         setUpColorPickerSelection(R.id.hours, KEY_HOURS_COLOR, config, R.string.color_white);
         setUpColorPickerSelection(R.id.minutes, KEY_MINUTES_COLOR, config, R.string.color_white);
         setUpColorPickerSelection(R.id.seconds, KEY_SECONDS_COLOR, config, R.string.color_gray);
 
-        setUpColorPickerListener(R.id.background, KEY_BACKGROUND_COLOR);
+        //setUpColorPickerListener(R.id.background, KEY_BACKGROUND_COLOR);
+        setUpEditTextListener(R.id.background);
         setUpColorPickerListener(R.id.hours, KEY_HOURS_COLOR);
         setUpColorPickerListener(R.id.minutes, KEY_MINUTES_COLOR);
         setUpColorPickerListener(R.id.seconds, KEY_SECONDS_COLOR);
@@ -185,6 +189,28 @@ public class DigitalWatchFaceCompanionConfigActivity extends Activity
                 break;
             }
         }
+    }
+
+    private void setUpEditTextListener(int spinnerId) {
+        EditText et = (EditText) findViewById(spinnerId);
+        et.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                //myOutputBox.setText(s);
+                DataMap config = new DataMap();
+                config.putString(KEY_BACKGROUND_COLOR, et.getText().toString());
+                byte[] rawData = config.toByteArray();
+                Wearable.MessageApi.sendMessage(mGoogleApiClient, mPeerId, PATH_WITH_FEATURE, rawData);
+
+                if (Log.isLoggable(TAG, Log.DEBUG)) {
+                    Log.d(TAG, "Sent watch face config message: " + s);
+                }
+            }
+        });
     }
 
     private void setUpColorPickerListener(int spinnerId, final String configKey) {
